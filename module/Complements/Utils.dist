@@ -1,0 +1,27 @@
+<?php
+/*
+Funciones personalizadas por nosotros
+*/
+
+namespace Complements;
+
+class Utils
+{
+    function uniqueSlug($em, $string, $entity, $parent_id, $separator='-') 
+    { 
+        $slug = $this->fixForUri($string, $separator); //covertimos la cadena al formato Slug
+        $similar = $em->getRepository($entity)->findOneBy(array('slug'=>$slug)); //Consultamos a la bd, si ya existe el slug registrado
+        
+        if($similar) $slug = $slug.$separator.$parent_id; //Si el slug ya está registrado, lo concatenamos con el parent_id
+       
+        return $slug; 
+    }
+
+    public static function fixForUri($string, $separator){
+        $slug = trim($string); // trim a la cadena
+        $slug= preg_replace('/[^a-zA-Z0-9 -]/','',$slug ); // solo caracteres alfanuméricos pero manteniedo los guiones
+        $slug= str_replace(' ',$separator, $slug); // Reemplazamos espacios en blanco por el separador
+        $slug= strtolower($slug);  // convertimos a minusculas
+        return $slug;
+    }
+}
